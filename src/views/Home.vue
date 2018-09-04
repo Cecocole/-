@@ -67,7 +67,14 @@
 
 <script>
 export default {
-
+  //判断是否登录
+  beforeCreate () {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      this.$message.warning('请先登录');
+      this.$router.push('/login');
+    }
+  }
 }
 </script>
 
