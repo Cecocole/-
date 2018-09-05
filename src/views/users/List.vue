@@ -14,7 +14,8 @@
             <el-button type="success" plain>添加用户</el-button>
         </el-col>
       </el-row>
-          <el-table
+      <el-table
+			v-loading="loading"
       :data="tableData"
       border
       stripe
@@ -39,10 +40,13 @@
         label="电话">
       </el-table-column>
       <el-table-column
-        prop="create_time"
         label="时间">
+				<template slot-scope="scope">
+					{{ scope.row.create_time | fmtDate('YYYY-MM-DD')}}
+				</template>
       </el-table-column>
       <el-table-column
+				width="80px"
         label="用户状态">
 				<template  slot-scope="scope">
 					<!-- 让开关绑定当前用户的mg_state属性	 -->
@@ -63,6 +67,16 @@
         </template>
       </el-table-column>
     </el-table>
+		<el-pagination
+			style="margin-top:15px"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 3, 4, 5]"
+      :page-size="pagesize"
+      layout="total,sizes, prev, pager, next,jumper"
+      :total="total">
+    </el-pagination>
     </el-card>
 </template>
 
@@ -70,8 +84,12 @@
 export default {
   data() {
     return {
-      tableData: []
-    };
+			tableData: [],
+			loading:true,
+			pagenum: 1,
+			pagesize: 2,
+			total:3
+		};
   },
   created() {
     this.loadData();
@@ -81,11 +99,14 @@ export default {
       const token = sessionStorage.getItem('token');
       this.$http.defaults.headers.common['Authorization'] = token;
       this.$http
-        .get('users?pagenum=1&pagesize=10')
+        .get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
         .then((response) => {
-          const { meta: { msg, status } } = response.data;
+					const { meta: { msg, status } } = response.data;
+					this.loading = false;
           if (status === 200) {
-            this.tableData = response.data.data.users;
+						
+						this.tableData = response.data.data.users;
+						this.total = response.data.data.total;
           } else {
             this.$message.error(msg);
           }
@@ -93,6 +114,18 @@ export default {
         .catch((err) => {
           console.log(err);
         });
+		},
+		handleSizeChange(val) {
+			//页容量发生变化 val页容量
+				this.pagesize = val;
+				this.loadData();
+        console.log(`每页 ${val} 条`);
+      },
+    handleCurrentChange(val) {
+			//当页码发送改变执行
+			this.pagenum = val;
+			this.loadData();
+        console.log(`当前页: ${val}`);
     }
   }
 };
