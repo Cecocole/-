@@ -61,8 +61,9 @@
         label="操作">
         <template slot-scope="scope">
             <!-- {{ scope.$index }} -->
+						<!-- scope.row 当前这一行绑定的数据对象 -->
 						<el-button size='mini' type="primary" icon="el-icon-edit" plain></el-button>
-  					<el-button  size='mini' type="danger" icon="el-icon-delete" plain></el-button>
+  					<el-button @click.prevent="handleDelete(scope.row.id)" size='mini' type="danger" icon="el-icon-delete" plain></el-button>
 						<el-button  size='mini' type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
@@ -84,32 +85,31 @@
 export default {
   data() {
     return {
-			tableData: [],
-			loading:true,
-			pagenum: 1,
-			pagesize: 2,
-			total:0,
-			//绑定搜索文本框
-			searchValue:''
-		};
+      tableData: [],
+      loading: true,
+      pagenum: 1,
+      pagesize: 2,
+      total: 0,
+      // 绑定搜索文本框
+      searchValue: ''
+    };
   },
   created() {
     this.loadData();
   },
   methods: {
     loadData() {
-			this.loading = true;
+      this.loading = true;
       const token = sessionStorage.getItem('token');
-			this.$http.defaults.headers.common['Authorization'] = token;
+      this.$http.defaults.headers.common['Authorization'] = token;
       this.$http
         .get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`)
         .then((response) => {
-					const { meta: { msg, status } } = response.data;
-					this.loading = false;
+          const { meta: { msg, status } } = response.data;
+          this.loading = false;
           if (status === 200) {
-						
-						this.tableData = response.data.data.users;
-						this.total = response.data.data.total;
+            this.tableData = response.data.data.users;
+            this.total = response.data.data.total;
           } else {
             this.$message.error(msg);
           }
@@ -117,25 +117,52 @@ export default {
         .catch((err) => {
           console.log(err);
         });
-		},
-		handleSizeChange(val) {
-			//页容量发生变化 val页容量
-				this.pagesize = val;
-				this.loadData();
-        console.log(`每页 ${val} 条`);
-      },
+    },
+    handleSizeChange(val) {
+      // 页容量发生变化 val页容量
+      this.pagesize = val;
+      this.loadData();
+      console.log(`每页 ${val} 条`);
+    },
     handleCurrentChange(val) {
-			//当页码发送改变执行
-			this.pagenum = val;
-			this.loadData();
-        console.log(`当前页: ${val}`);
-		},
-		//搜索功能
-		handleSearch() {
-			this.loadData();
-		}
+      // 当页码发送改变执行
+      this.pagenum = val;
+      this.loadData();
+      console.log(`当前页: ${val}`);
+    },
+    // 搜索功能
+    handleSearch() {
+      this.loadData();
+    },
+    // 删除用户
+    handleDelete(id) {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+				const response = await this.$http.delete(`users/${id}`);
+				//获取返回的数据 判断是否成功
+				const { meta: { status, msg } } = response.data;
+				if (status === 200) {
+					// 成功
+					this.$message.success(msg);
+					this.loadData();
+				}else {
+					//失败
+					this.$message.error(msg);
+				}
+      }).catch(() => {
+        // 点击取消按钮
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    }
   }
 };
+
 </script>
 
 <style>
