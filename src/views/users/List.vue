@@ -98,8 +98,9 @@ export default {
   },
   methods: {
     loadData() {
+			this.loading = true;
       const token = sessionStorage.getItem('token');
-      this.$http.defaults.headers.common['Authorization'] = token;
+			this.$http.defaults.headers.common['Authorization'] = token;
       this.$http
         .get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`)
         .then((response) => {
