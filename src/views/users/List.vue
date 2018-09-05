@@ -8,8 +8,8 @@
       </el-breadcrumb>
       <el-row class="row">
         <el-col :span="24">
-            <el-input style="width:300px" placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-input v-model="searchValue" style="width:300px" placeholder="请输入内容" clearable>
+            <el-button @click.prevent="handleSearch" slot="append" icon="el-icon-search"></el-button>
             </el-input>
             <el-button type="success" plain>添加用户</el-button>
         </el-col>
@@ -88,7 +88,9 @@ export default {
 			loading:true,
 			pagenum: 1,
 			pagesize: 2,
-			total:3
+			total:0,
+			//绑定搜索文本框
+			searchValue:''
 		};
   },
   created() {
@@ -99,7 +101,7 @@ export default {
       const token = sessionStorage.getItem('token');
       this.$http.defaults.headers.common['Authorization'] = token;
       this.$http
-        .get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+        .get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchValue}`)
         .then((response) => {
 					const { meta: { msg, status } } = response.data;
 					this.loading = false;
@@ -126,7 +128,11 @@ export default {
 			this.pagenum = val;
 			this.loadData();
         console.log(`当前页: ${val}`);
-    }
+		},
+		//搜索功能
+		handleSearch() {
+			this.loadData();
+		}
   }
 };
 </script>
