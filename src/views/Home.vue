@@ -69,7 +69,7 @@
 
 <script>
 export default {
-  //判断是否登录
+  // 判断是否登录
   beforeCreate () {
     const token = sessionStorage.getItem('token');
     if (!token) {
@@ -84,7 +84,7 @@ export default {
       this.$router.push('/login');
     }
   }
-}
+};
 </script>
 
 <style>
@@ -111,14 +111,14 @@ export default {
   line-height: 60px;
   padding: 0;
 }
-  
+
 .el-aside {
   background-color: #D3DCE6;
   color: #333;
   /* text-align: center; */
   line-height: 200px;
 }
-  
+
 .el-main {
   background-color: #E9EEF3;
   color: #333;

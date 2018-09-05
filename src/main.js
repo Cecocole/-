@@ -8,7 +8,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import '@/assets/css/index.css';
 import Myhttp from '@/plugins/Myhttp';
 
-//注册myhttp插件
+// 注册myhttp插件
 Vue.use(Myhttp);
 
 Vue.use(ElementUI);
@@ -17,6 +17,6 @@ Vue.config.productionTip = false;
 new Vue({
   el: '#app',
   router,
-  components:{ App },
-  template:'<App/>'
+  components: { App },
+  template: '<App/>'
 });
