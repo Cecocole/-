@@ -43,11 +43,24 @@
         label="时间">
       </el-table-column>
       <el-table-column
-        prop="mg_state"
         label="用户状态">
+				<template  slot-scope="scope">
+					<!-- 让开关绑定当前用户的mg_state属性	 -->
+				<el-switch
+					v-model="scope.row.mg_state"
+					active-color="#13ce66"
+					inactive-color="#ff4949">
+				</el-switch>
+				</template>
       </el-table-column>
       <el-table-column
         label="操作">
+        <template slot-scope="scope">
+            <!-- {{ scope.$index }} -->
+						<el-button size='mini' type="primary" icon="el-icon-edit" plain></el-button>
+  					<el-button  size='mini' type="danger" icon="el-icon-delete" plain></el-button>
+						<el-button  size='mini' type="success" icon="el-icon-check" plain></el-button>
+        </template>
       </el-table-column>
     </el-table>
     </el-card>
@@ -57,30 +70,30 @@
 export default {
   data() {
     return {
-      tableData:[]
+      tableData: []
     };
   },
   created() {
-      this.loadData();
+    this.loadData();
   },
   methods: {
-      loadData(){
-        const token = sessionStorage.getItem('token');
-        this.$http.defaults.headers.common['Authorization'] = token;
-          this.$http
-          .get('users?pagenum=1&pagesize=10')
-          .then((response)=>{
-              const { meta:{msg,status} } = response.data;
-              if(status === 200){
-                  this.tableData = response.data.data.users;
-              }else {
-                  this.$message.error(msg);
-              }
-          })
-          .catch((err)=>{
-              console.log(err);
-          })
-      }
+    loadData() {
+      const token = sessionStorage.getItem('token');
+      this.$http.defaults.headers.common['Authorization'] = token;
+      this.$http
+        .get('users?pagenum=1&pagesize=10')
+        .then((response) => {
+          const { meta: { msg, status } } = response.data;
+          if (status === 200) {
+            this.tableData = response.data.data.users;
+          } else {
+            this.$message.error(msg);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
 };
 </script>

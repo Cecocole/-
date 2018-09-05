@@ -2,7 +2,6 @@
 <div class="login-wrap">
     <el-form
         class="login-form"
-        :label-position="top"
         label-width="80px"
         :model="formData">
         <h2>用户登录</h2>
@@ -33,31 +32,52 @@ export default {
       }
     };
   },
+  // es7新语法 async await
   methods: {
     // 登录
-    handleLogin() {
-      this.$http
-        .post('/login', this.formData)
-        .then((response) => {
-          // 判断登录是否成功
-          // 获取response.data中的msg和status
-          const { meta: { msg, status } } = response.data;
-          if (status === 200) {
-            // 成功
-            this.$message.success(msg);
-            // 记录token
-            sessionStorage.setItem('token', response.data.data.token);
-            // 跳转
-            this.$router.push('/');
-          } else {
-            // 失败
-            this.$message.error(msg);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    async handleLogin() {
+      const response = await this.$http.post('login', this.formData);
+      // this.$http
+      //   .post('/login', this.formData)
+      //   .then((response) => {
+      // 判断登录是否成功
+      // 获取response.data中的msg和status
+      const { meta: { msg, status } } = response.data;
+      if (status === 200) {
+        // 成功
+        this.$message.success(msg);
+        // 记录token
+        sessionStorage.setItem('token', response.data.data.token);
+        // 跳转
+        this.$router.push('/');
+      } else {
+        // 失败
+        this.$message.error(msg);
+      }
     }
+    // handleLogin() {
+    //   this.$http
+    //     .post('/login', this.formData)
+    //     .then((response) => {
+    //       // 判断登录是否成功
+    //       // 获取response.data中的msg和status
+    //       const { meta: { msg, status } } = response.data;
+    //       if (status === 200) {
+    //         // 成功
+    //         this.$message.success(msg);
+    //         // 记录token
+    //         sessionStorage.setItem('token', response.data.data.token);
+    //         // 跳转
+    //         this.$router.push('/');
+    //       } else {
+    //         // 失败
+    //         this.$message.error(msg);
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+    // }
   }
 };
 </script>
