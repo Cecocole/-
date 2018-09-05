@@ -81,7 +81,10 @@
     </el-pagination>
 		<!-- 添加用户的对话框 -->
 		<!-- .sync是点x号 -->
-		<el-dialog title="收货地址" :visible.sync="addUserDialogFormVisible">
+		<el-dialog 
+		title="收货地址"
+		 :visible.sync="addUserDialogFormVisible"
+		 @close="handleClose">
 			<el-form label-width="80px" :model="formData">
 				<el-form-item label="用户名">
 					<el-input v-model="formData.username" auto-complete="off"></el-input>
@@ -219,11 +222,22 @@ export default {
 				this.loadData();
 				// 关闭对话框
 				this.addUserDialogFormVisible = false;
-
+				// 清空文本框
+				// this.formData = {}; 会造成内存泄漏 一直创建formData对象
+				// 遍历对象的所有属性 把对象的所有属性设置为空
+				// for ( let key in this.formData){
+				// 	this.formData[key] = '';
+				// };
 			}else {
 				//失败
 				this.$message.error(msg);
 			}
+		},
+		handleClose() {
+			// 清空输入框
+			for ( let key in this.formData){
+					this.formData[key] = '';
+				};
 		}
   }
 };
