@@ -85,11 +85,11 @@
 		title="收货地址"
 		 :visible.sync="addUserDialogFormVisible"
 		 @close="handleClose">
-			<el-form label-width="80px" :model="formData">
-				<el-form-item label="用户名">
-					<el-input v-model="formData.username" auto-complete="off"></el-input>
+			<el-form label-width="80px" :model="formData" :rules="rules" ref="form">
+				<el-form-item label="用户名" prop="username">
+					<el-input v-model="formData.username" auto-complete="off" ></el-input>
 				</el-form-item>
-				<el-form-item label="密码">
+				<el-form-item label="密码" prop="password">
 					<el-input type="password" v-model="formData.password" auto-complete="off"></el-input>
 				</el-form-item>
 				<el-form-item label="邮箱">
@@ -126,6 +126,17 @@ export default {
 				password: '',
 				email: '',
 				mobile: ''
+			},
+			// 表达验证规则
+			rules: {
+				username: [
+					{ required: true, message: '请输入活动名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+				],
+				password: [
+					{ required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+				]
 			}
     };
   },
@@ -200,6 +211,7 @@ export default {
         });
 			});
 		},
+		// 更新状态
 		async handleChange(user){
 			const response = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
 			const { meta: { status, msg } } = response.data;
@@ -210,28 +222,35 @@ export default {
 			}
 		},
 		// 添加用户
-		async handleAdd() {
-			const response = await this.$http.post('users', this.formData);
-			// 获取数据 判断是否添加成功
-			const { meta: { status, msg } } = response.data;
-			if (status === 201){
-				//成功
-				//提示
-				this.$message.success(msg);
-				// 刷新表格
-				this.loadData();
-				// 关闭对话框
-				this.addUserDialogFormVisible = false;
-				// 清空文本框
-				// this.formData = {}; 会造成内存泄漏 一直创建formData对象
-				// 遍历对象的所有属性 把对象的所有属性设置为空
-				// for ( let key in this.formData){
-				// 	this.formData[key] = '';
-				// };
-			}else {
-				//失败
-				this.$message.error(msg);
-			}
+		handleAdd() {
+			this.$refs.form.validate( async (valid) => {
+          if (!valid) {
+						this.$message.warning('验证失败');
+						return;
+					};
+					const response = await this.$http.post('users', this.formData);
+					// 获取数据 判断是否添加成功
+					const { meta: { status, msg } } = response.data;
+					if (status === 201){
+						//成功
+						//提示
+						this.$message.success(msg);
+						// 刷新表格
+						this.loadData();
+						// 关闭对话框
+						this.addUserDialogFormVisible = false;
+						// 清空文本框
+						// this.formData = {}; 会造成内存泄漏 一直创建formData对象
+						// 遍历对象的所有属性 把对象的所有属性设置为空
+						// for ( let key in this.formData){
+						// 	this.formData[key] = '';
+						// };
+					}else {
+						//失败
+						this.$message.error(msg);
+					}
+        });
+			
 		},
 		handleClose() {
 			// 清空输入框
