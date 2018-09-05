@@ -63,7 +63,7 @@
         <template slot-scope="scope">
             <!-- {{ scope.$index }} -->
 						<!-- scope.row 当前这一行绑定的数据对象 -->
-						<el-button size='mini' type="primary" icon="el-icon-edit" plain></el-button>
+						<el-button @click="handleOpenEditDialog(scope.row)" size='mini' type="primary" icon="el-icon-edit" plain></el-button>
   					<el-button @click.prevent="handleDelete(scope.row.id)" size='mini' type="danger" icon="el-icon-delete" plain></el-button>
 						<el-button  size='mini' type="success" icon="el-icon-check" plain></el-button>
         </template>
@@ -82,7 +82,7 @@
 		<!-- 添加用户的对话框 -->
 		<!-- .sync是点x号 -->
 		<el-dialog 
-		title="收货地址"
+		title="添加用户"
 		 :visible.sync="addUserDialogFormVisible"
 		 @close="handleClose">
 			<el-form label-width="80px" :model="formData" :rules="rules" ref="form">
@@ -99,11 +99,32 @@
 					<el-input v-model="formData.mobile" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
-  <div slot="footer" class="dialog-footer">
-    <el-button @click="addUserDialogFormVisible = false">取 消</el-button>
-    <el-button type="primary" @click="handleAdd">确 定</el-button>
-  </div>
-</el-dialog>
+  		<div slot="footer" class="dialog-footer">
+    	<el-button @click="addUserDialogFormVisible = false">取 消</el-button>
+    	<el-button type="primary" @click="handleAdd">确 定</el-button>
+  		</div>
+		</el-dialog>
+		<!-- 修改用户的对话框 -->
+		<el-dialog 
+		title="修改用户"
+		 :visible.sync="editUserDialogFormVisible"
+		 @close="handleClose">
+			<el-form label-width="80px" :model="formData">
+				<el-form-item label="用户名">
+					<el-input v-model="formData.username" auto-complete="off" readonly disabled></el-input>
+				</el-form-item>
+				<el-form-item label="邮箱">
+					<el-input v-model="formData.email" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="电话">
+					<el-input v-model="formData.mobile" auto-complete="off"></el-input>
+				</el-form-item>
+			</el-form>
+  		<div slot="footer" class="dialog-footer">
+    	<el-button @click="editUserDialogFormVisible = false">取 消</el-button>
+    	<!-- <el-button type="primary" @click="handleEdit">确 定</el-button> -->
+  		</div>
+	</el-dialog>
     </el-card>
 </template>
 
@@ -120,6 +141,7 @@ export default {
 			searchValue: '',
 			// 添加用户的对话框
 			addUserDialogFormVisible: false,
+			editUserDialogFormVisible: false,
 			//绑定的表单对象
 			formData:{
 				username: '',
@@ -252,11 +274,21 @@ export default {
         });
 			
 		},
+		// 关闭对话框 清空文本框
 		handleClose() {
 			// 清空输入框
 			for ( let key in this.formData){
 					this.formData[key] = '';
 				};
+		},
+		//点击编辑按钮，打开修改用户的对话框
+		handleOpenEditDialog(user) {
+			//打开修改用户的对话框
+			this.editUserDialogFormVisible = true;
+			// 摄者 formData的值
+			this.formData.username = user.username;
+			this.formData.email = user.email;
+			this.formData.mobile = user.mobile;
 		}
   }
 };
