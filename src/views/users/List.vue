@@ -128,8 +128,7 @@
     <!-- 分配角色 -->
     <el-dialog
 		title="分配角色"
-		 :visible.sync="setRoleDialogFormVisible"
-      @close="handleClose">
+		 :visible.sync="setRoleDialogFormVisible">
         <el-form label-width="100px" :model="formData">
           <el-form-item label="用户名">
             {{ formData.username }}
@@ -153,7 +152,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" >确 定</el-button>
+        <el-button type="primary" @click="handleSetRole">确 定</el-button>
         </div>
   	  </el-dialog>
     </el-card>
@@ -358,6 +357,24 @@ export default {
       // 根据用户ID查询用户信息 找到当前用户对应的用户信息
       const res = await this.$http.get(`users/${user.id}`);
       this.currentRoleId = res.data.data.rid;
+      // 记录用户id
+      this.formData.id = user.id;
+    },
+    // 设置用户角色
+    async handleSetRole() {
+      // put users/:id/role 请求体需要rid
+      const response = await this.$http.put(`users/${this.formData.id}`,{
+        rid: this.currentRoleId
+      });
+      const { meta: { msg, status } } = response.data;
+      if(status === 200){
+        //成功
+        this.$message.success(msg);
+        this.setRoleDialogFormVisible = false;
+      }else {
+        //失败
+        this.$message.error(msg);
+      }
     }
   }
 };
