@@ -6,6 +6,7 @@ const MyHtpp = {};
 MyHtpp.install = function(Vue) {
   // 设置baseURL
   axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/';
+  // let loadingInstance = null;
   // 添加请求拦截器
   axios.interceptors.request.use(function(config){
     // 在请求发送之前 添加请求头token
@@ -16,7 +17,7 @@ MyHtpp.install = function(Vue) {
       const token = sessionStorage.getItem('token');
       config.headers.Authorization = token;
     };
-    // const loadingInstance = Loading.service();
+    // loadingInstance = Loading.service();
     return config;
   }, function (error) {
     return Promise.reject(error);
