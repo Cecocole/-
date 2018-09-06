@@ -73,10 +73,28 @@
         <template slot-scope="scope">
             <el-button size='mini' type="primary" icon="el-icon-edit" plain></el-button>
   			<el-button  size='mini' type="danger" icon="el-icon-delete" plain></el-button>
-			<el-button  size='mini' type="success" icon="el-icon-check" plain></el-button>
+			<el-button @click="handleOpenDialog" size='mini' type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+    title="权限分配"
+    :visible.sync="dialogVisible">
+    <!-- data 绑定到树上的数据 [{}] -->
+    <!-- props 告诉树要呈现的属性是哪个，子节点对应的属性是哪个 -->
+      <el-tree
+        default-expand-all 
+        show-checkbox
+        :data="data"
+        :props="defaultProps">
+          
+      </el-tree>
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false" >确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -84,7 +102,15 @@
 export default {
     data() {
         return {
-            tableData:[]
+            tableData:[],
+            dialogVisible: false,
+            data: [],
+            defaultProps: {
+                //树上节点绑定对象的属性
+                label: 'authName',
+                // 对象的子节点绑定对象的属性
+                children: 'children'
+            }
         }
     },
     created() {
@@ -116,6 +142,13 @@ export default {
             } else {
                 this.$message.error(msg);
             }
+        },
+        // 点击分配权限，显示对话框
+        async handleOpenDialog () {
+            this.dialogVisible = true;
+            //获取所有权限tree
+            const response = await this.$http.get('rights/tree');
+            this.data = response.data.data;
         }
     }
 };
