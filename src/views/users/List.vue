@@ -359,7 +359,7 @@ export default {
     // 设置用户角色
     async handleSetRole() {
       // put users/:id/role 请求体需要rid
-      const response = await this.$http.put(`users/${this.formData.id}`,{
+      const response = await this.$http.put(`users/${this.formData.id}/role`,{
         rid: this.currentRoleId
       });
       const { meta: { msg, status } } = response.data;
