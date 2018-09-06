@@ -354,6 +354,10 @@ export default {
       // 发送请求获取所有的角色
       const response = await this.$http.get('roles');
       this.options = response.data.data;
+      // 设置当前用户默认的角色
+      // 根据用户ID查询用户信息 找到当前用户对应的用户信息
+      const res = await this.$http.get(`users/${user.id}`);
+      this.currentRoleId = res.data.data.rid;
     }
   }
 };
