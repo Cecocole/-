@@ -1,11 +1,7 @@
 <template>
     <el-card class="card">
         <!-- 面包屑 -->
-      <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item><a href="/">用户管理</a></el-breadcrumb-item>
-        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-      </el-breadcrumb>
+      <my-breadcrumb level1="用户管理" level2="用户列表"></my-breadcrumb>
       <el-row class="row">
         <el-col :span="24">
             <el-input v-model="searchValue" style="width:300px" placeholder="请输入内容" clearable>
