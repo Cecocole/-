@@ -102,10 +102,20 @@ export default {
             }
         },
         // 删除当前角色对应的权限
-        handleClose(role, rightId) {
+        async handleClose(role, rightId) {
             // role 当前行对应的角色对象
-            alert(rightId)
             // rightId 当前权限的ID
+            // roles/:roleId/rights/:rightId
+            const response = await this.$http.delete(`roles/${role.id}/rights/${rightId}`);
+            const { meta: {msg,status} } = response.data;
+            if(status === 200) {
+                this.$message.success(msg);
+                // this.loadData();
+                // 只重新加载当前角色的权限列表
+                role.children = response.data.data;
+            } else {
+                this.$message.error(msg);
+            }
         }
     }
 };
