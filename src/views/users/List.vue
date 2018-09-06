@@ -81,7 +81,7 @@
     </el-pagination>
 		<!-- 添加用户的对话框 -->
 		<!-- .sync是点x号 -->
-		<el-dialog 
+		<el-dialog
 		title="添加用户"
 		 :visible.sync="addUserDialogFormVisible"
 		 @close="handleClose">
@@ -105,7 +105,7 @@
   		</div>
 		</el-dialog>
 		<!-- 修改用户的对话框 -->
-		<el-dialog 
+		<el-dialog
 		title="修改用户"
 		 :visible.sync="editUserDialogFormVisible"
 		 @close="handleClose">
@@ -138,28 +138,28 @@ export default {
       pagesize: 2,
       total: 0,
       // 绑定搜索文本框
-			searchValue: '',
-			// 添加用户的对话框
-			addUserDialogFormVisible: false,
-			editUserDialogFormVisible: false,
-			//绑定的表单对象
-			formData:{
-				username: '',
-				password: '',
-				email: '',
-				mobile: ''
-			},
-			// 表达验证规则
-			rules: {
-				username: [
-					{ required: true, message: '请输入活动名称', trigger: 'blur' },
+      searchValue: '',
+      // 添加用户的对话框
+      addUserDialogFormVisible: false,
+      editUserDialogFormVisible: false,
+      // 绑定的表单对象
+      formData: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      },
+      // 表达验证规则
+      rules: {
+        username: [
+          { required: true, message: '请输入活动名称', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-				],
-				password: [
-					{ required: true, message: '请输入密码', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-				]
-			}
+        ]
+      }
     };
   },
   created() {
@@ -209,110 +209,108 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
-				const response = await this.$http.delete(`users/${id}`);
-				//获取返回的数据 判断是否成功
-				const { meta: { status, msg } } = response.data;
-				if (status === 200) {
-					// 成功
-					this.$message.success(msg);
-					//如果是最后一页 并且只有一条数据 此时删除数据会有问题
-					if ( this.pagenum > 1 && this.tableData.length === 1){
-						this.pagenum--;
-					}
-					//刷新表格
-					this.loadData();
-				}else {
-					//失败
-					this.$message.error(msg);
-				}
+        const response = await this.$http.delete(`users/${id}`);
+        // 获取返回的数据 判断是否成功
+        const { meta: { status, msg } } = response.data;
+        if (status === 200) {
+          // 成功
+          this.$message.success(msg);
+          // 如果是最后一页 并且只有一条数据 此时删除数据会有问题
+          if (this.pagenum > 1 && this.tableData.length === 1) {
+            this.pagenum--;
+          }
+          // 刷新表格
+          this.loadData();
+        } else {
+          // 失败
+          this.$message.error(msg);
+        }
       }).catch(() => {
         // 点击取消按钮
         this.$message({
           type: 'info',
           message: '已取消删除'
         });
-			});
-		},
-		// 更新状态
-		async handleChange(user){
-			const response = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
-			const { meta: { status, msg } } = response.data;
-			if(status === 200){
-				this.$message.success(msg)
-			}else {
-				this.$message.error(msg);
-			}
-		},
-		// 添加用户
-		handleAdd() {
-			this.$refs.form.validate( async (valid) => {
-          if (!valid) {
-						this.$message.warning('验证失败');
-						return;
-					};
-					const response = await this.$http.post('users', this.formData);
-					// 获取数据 判断是否添加成功
-					const { meta: { status, msg } } = response.data;
-					if (status === 201){
-						//成功
-						//提示
-						this.$message.success(msg);
-						// 刷新表格
-						this.loadData();
-						// 关闭对话框
-						this.addUserDialogFormVisible = false;
-						// 清空文本框
-						// this.formData = {}; 会造成内存泄漏 一直创建formData对象
-						// 遍历对象的所有属性 把对象的所有属性设置为空
-						// for ( let key in this.formData){
-						// 	this.formData[key] = '';
-						// };
-					}else {
-						//失败
-						this.$message.error(msg);
-					}
-        });
-			
-		},
-		// 关闭对话框 清空文本框
-		handleClose() {
-			// 清空输入框
-			for ( let key in this.formData){
-					this.formData[key] = '';
-				};
-		},
-		//点击编辑按钮，打开修改用户的对话框
-		handleOpenEditDialog(user) {
-			//打开修改用户的对话框
-			this.editUserDialogFormVisible = true;
-			// 设置 formData的值
-			this.formData.username = user.username;
-			this.formData.email = user.email;
-			this.formData.mobile = user.mobile;
-			// 点击编辑按钮的时候 记录下用户id 点击确定按钮的时候使用
-			this.formData.id = user.id;
-		},
-		//点击确定按钮，修改用户信息
-		async handleEdit() {
-			// users/:id mobile email
-			const response = await this.$http.put(`/users/${this.formData.id}`,{
-				email:this.formData.email,
-				mobile:this.formData.mobile
-			});
-			const { meta: { status, msg} } = response.data;
-			if (status === 200) {
-				// 成功
-				//关闭对话框
-				this.editUserDialogFormVisible = false;
-				// 刷新table
-				this.loadData();
-				// 提示
-				this.$message.success(msg);
-
-			}else {
-				this.$message.error(msg);
-			}
-		}
+      });
+    },
+    // 更新状态
+    async handleChange(user) {
+      const response = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
+      const { meta: { status, msg } } = response.data;
+      if (status === 200) {
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+    },
+    // 添加用户
+    handleAdd() {
+      this.$refs.form.validate(async (valid) => {
+        if (!valid) {
+          this.$message.warning('验证失败');
+          return;
+        };
+        const response = await this.$http.post('users', this.formData);
+        // 获取数据 判断是否添加成功
+        const { meta: { status, msg } } = response.data;
+        if (status === 201) {
+          // 成功
+          // 提示
+          this.$message.success(msg);
+          // 刷新表格
+          this.loadData();
+          // 关闭对话框
+          this.addUserDialogFormVisible = false;
+          // 清空文本框
+          // this.formData = {}; 会造成内存泄漏 一直创建formData对象
+          // 遍历对象的所有属性 把对象的所有属性设置为空
+          // for ( let key in this.formData){
+          // 	this.formData[key] = '';
+          // };
+        } else {
+          // 失败
+          this.$message.error(msg);
+        }
+      });
+    },
+    // 关闭对话框 清空文本框
+    handleClose() {
+      // 清空输入框
+      for (let key in this.formData) {
+        this.formData[key] = '';
+      };
+    },
+    // 点击编辑按钮，打开修改用户的对话框
+    handleOpenEditDialog(user) {
+      // 打开修改用户的对话框
+      this.editUserDialogFormVisible = true;
+      // 设置 formData的值
+      this.formData.username = user.username;
+      this.formData.email = user.email;
+      this.formData.mobile = user.mobile;
+      // 点击编辑按钮的时候 记录下用户id 点击确定按钮的时候使用
+      this.formData.id = user.id;
+    },
+    // 点击确定按钮，修改用户信息
+    async handleEdit() {
+      // users/:id mobile email
+      const response = await this.$http.put(`/users/${this.formData.id}`, {
+        email: this.formData.email,
+        mobile: this.formData.mobile
+      });
+      const { meta: { status, msg} } = response.data;
+      if (status === 200) {
+        // 成功
+        // 关闭对话框
+        this.editUserDialogFormVisible = false;
+        // 刷新table
+        this.loadData();
+        // 提示
+        this.$message.success(msg);
+      } else {
+        this.$message.error(msg);
+      }
+    }
   }
 };
 
