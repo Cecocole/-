@@ -65,7 +65,7 @@
 						<!-- scope.row 当前这一行绑定的数据对象 -->
 						<el-button @click="handleOpenEditDialog(scope.row)" size='mini' type="primary" icon="el-icon-edit" plain></el-button>
   					<el-button @click.prevent="handleDelete(scope.row.id)" size='mini' type="danger" icon="el-icon-delete" plain></el-button>
-						<el-button  size='mini' type="success" icon="el-icon-check" plain></el-button>
+						<el-button @click="handleOpenSetRoledialog(scope.row)" size='mini' type="success" icon="el-icon-check" plain></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -81,7 +81,7 @@
     </el-pagination>
 		<!-- 添加用户的对话框 -->
 		<!-- .sync是点x号 -->
-		<el-dialog
+	<el-dialog
 		title="添加用户"
 		 :visible.sync="addUserDialogFormVisible"
 		 @close="handleClose">
@@ -108,23 +108,54 @@
 		<el-dialog
 		title="修改用户"
 		 :visible.sync="editUserDialogFormVisible"
-		 @close="handleClose">
-			<el-form label-width="80px" :model="formData">
-				<el-form-item label="用户名">
-					<el-input v-model="formData.username" auto-complete="off" readonly disabled></el-input>
-				</el-form-item>
-				<el-form-item label="邮箱">
-					<el-input v-model="formData.email" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="电话">
-					<el-input v-model="formData.mobile" auto-complete="off"></el-input>
-				</el-form-item>
-			</el-form>
-  		<div slot="footer" class="dialog-footer">
-    	<el-button @click="editUserDialogFormVisible = false">取 消</el-button>
-    	<el-button type="primary" @click="handleEdit">确 定</el-button>
-  		</div>
-	</el-dialog>
+      @close="handleClose">
+        <el-form label-width="80px" :model="formData">
+          <el-form-item label="用户名">
+            <el-input v-model="formData.username" auto-complete="off" readonly disabled></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱">
+            <el-input v-model="formData.email" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="电话">
+            <el-input v-model="formData.mobile" auto-complete="off"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+        <el-button @click="editUserDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleEdit">确 定</el-button>
+        </div>
+  	  </el-dialog>  
+    <!-- 分配角色 -->
+    <el-dialog
+		title="分配角色"
+		 :visible.sync="setRoleDialogFormVisible"
+      @close="handleClose">
+        <el-form label-width="100px" :model="formData">
+          <el-form-item label="用户名">
+            {{ formData.username }}
+          </el-form-item>
+          <el-form-item label="请选择角色">
+            <!-- 下拉框 -->
+            <!-- currentRoleId值默认为-1 -->
+            <el-select v-model="currentRoleId" placeholder="请选择">
+              <el-option
+                label="请选择"
+                :value="-1" disabled>
+              </el-option>
+              <el-option
+                v-for="item in options"
+                :key="item.id"
+                :label="item.roleName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" >确 定</el-button>
+        </div>
+  	  </el-dialog>
     </el-card>
 </template>
 
@@ -142,6 +173,7 @@ export default {
       // 添加用户的对话框
       addUserDialogFormVisible: false,
       editUserDialogFormVisible: false,
+      setRoleDialogFormVisible: false,
       // 绑定的表单对象
       formData: {
         username: '',
@@ -159,7 +191,11 @@ export default {
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      // 绑定下拉框
+      currentRoleId:-1,
+      //绑定下拉框的数据
+      options: []
     };
   },
   created() {
@@ -310,6 +346,14 @@ export default {
       } else {
         this.$message.error(msg);
       }
+    },
+    //点击分配角色
+    async handleOpenSetRoledialog(user) {
+      this.setRoleDialogFormVisible = true;
+      this.formData.username = user.username;
+      // 发送请求获取所有的角色
+      const response = await this.$http.get('roles');
+      this.options = response.data.data;
     }
   }
 };
