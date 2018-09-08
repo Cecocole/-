@@ -7,14 +7,24 @@
         <!-- 表格 -->
         <el-table
         border
-        
+        stripe
         :data="tableData"
         style="width: 100%">
-            <el-table-column
+        <!-- treekey 唯一标示
+            parentKey 绑定到父级id的属性
+            levelkey绑定到不同级别的属性
+            indentSize 设置不同级别的缩进
+            childkey 默认值是children，标示了子节点的属性
+         -->
+            <el-table-tree-column
+                treeKey="cat_id"
+                parentKey="cat_pid"
+                levelKey="cat_level"
+                :indentSize="20"
                 prop="cat_name"
                 label="分类名称"
                 width="300">
-            </el-table-column>
+            </el-table-tree-column>
             <el-table-column
                 prop="cat_level"
                 label="级别"
@@ -44,7 +54,14 @@
 </template>
 
 <script>
+// 配置tree grid局部组件
+import ElTreeGrid from 'element-tree-grid';
+
 export default {
+    // 注册局部组件
+    components: {
+        'el-table-tree-column' : ElTreeGrid
+    },
     data() {
         return {
             tableData:[]
@@ -56,10 +73,10 @@ export default {
     methods: {
         // 获取数据
         async loadData() {
-            const response = await this.$http.get('categories?type=3&pagenum=1&pafesize=5');
+            const response = await this.$http.get('categories?type=3&pagenum=1&pagesize=5');
             const { meta: { msg, status} } = response.data;
             if(status === 200) {
-                this.tableData = response.data.data;
+                this.tableData = response.data.data.result;
             }
         },
     }
