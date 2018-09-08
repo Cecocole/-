@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       // 获取菜单数据
-      menus:[]
+      menus: []
     };
   },
   created () {
@@ -72,11 +72,11 @@ export default {
       this.$message.success('退出成功');
       this.$router.push('/login');
     },
-    //加载菜单数据
+    // 加载菜单数据
     async loadMenus() {
       const response = await this.$http.get('menus');
-      const { meta: { msg, status } } = response.data;
-      if(status === 200) {
+      const { meta: { status } } = response.data;
+      if (status === 200) {
         this.menus = response.data.data;
       }
     }

@@ -36,26 +36,26 @@
 
 <script>
 export default {
-    data() {
-        return {
-            tableData:[]
-        }
-    },
-    created() {
-        this.loadData();
-    },
-    methods: {
-        async loadData() {
-            const response = await this.$http.get('rights/list');
-            const { meta: { status, msg } } = response.data;
-            if(status === 200) {
-                this.tableData = response.data.data;
-            }else {
-                this.$message.error(msg);
-            }
-        }
+  data() {
+    return {
+      tableData: []
+    };
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    async loadData() {
+      const response = await this.$http.get('rights/list');
+      const { meta: { status, msg } } = response.data;
+      if (status === 200) {
+        this.tableData = response.data.data;
+      } else {
+        this.$message.error(msg);
+      }
     }
-}
+  }
+};
 </script>
 
 <style>

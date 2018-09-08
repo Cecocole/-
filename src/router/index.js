@@ -25,8 +25,8 @@ const router = new Router({
           name: 'rights',
           path: '/rights',
           component: Rights
-        },{
-          name:'roles',
+        }, {
+          name: 'roles',
           path: '/roles',
           component: Roles
         }
@@ -40,12 +40,12 @@ router.beforeEach((to, from, next) => {
   // 判断有没有token
   if (to.name === 'login') {
     next();
-  }else {
-    //判断有没有token
+  } else {
+    // 判断有没有token
     const token = sessionStorage.getItem('token');
     if (token) {
       next();
-    }else {
+    } else {
       // 没有token跳转到登录
       // this不是vue的实例
       // this.$router.push('/login')
@@ -56,6 +56,6 @@ router.beforeEach((to, from, next) => {
       Message.warning('请先登录');
     }
   }
-})
+});
 
 export default router;

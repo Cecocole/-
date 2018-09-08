@@ -120,7 +120,7 @@
         <el-button @click="editUserDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="handleEdit">确 定</el-button>
         </div>
-  	  </el-dialog>  
+  	  </el-dialog>
     <!-- 分配角色 -->
     <el-dialog
 		title="分配角色"
@@ -188,8 +188,8 @@ export default {
         ]
       },
       // 绑定下拉框
-      currentRoleId:-1,
-      //绑定下拉框的数据
+      currentRoleId: -1,
+      // 绑定下拉框的数据
       options: []
     };
   },
@@ -342,7 +342,7 @@ export default {
         this.$message.error(msg);
       }
     },
-    //点击分配角色
+    // 点击分配角色
     async handleOpenSetRoledialog(user) {
       this.setRoleDialogFormVisible = true;
       this.formData.username = user.username;
@@ -359,16 +359,16 @@ export default {
     // 设置用户角色
     async handleSetRole() {
       // put users/:id/role 请求体需要rid
-      const response = await this.$http.put(`users/${this.formData.id}/role`,{
+      const response = await this.$http.put(`users/${this.formData.id}/role`, {
         rid: this.currentRoleId
       });
       const { meta: { msg, status } } = response.data;
-      if(status === 200){
-        //成功
+      if (status === 200) {
+        // 成功
         this.$message.success(msg);
         this.setRoleDialogFormVisible = false;
-      }else {
-        //失败
+      } else {
+        // 失败
         this.$message.error(msg);
       }
     }

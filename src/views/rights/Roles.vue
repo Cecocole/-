@@ -16,7 +16,7 @@
               :key="level1.id">
                   <el-col :span="4">
                       <!-- 显示一级权限名字 -->
-                      <el-tag 
+                      <el-tag
                       closable
                       @close="handleClose(scope.row,level1.id)">
                         {{ level1.authName}}
@@ -27,7 +27,7 @@
                       :key="level2.id">
                           <el-col :span="4">
                               <!-- 显示二级权限名称 -->
-                              <el-tag 
+                              <el-tag
                               closable
                               type="success"
                               @close="handleClose(scope.row,level2.id)">
@@ -87,11 +87,11 @@
         ref="tree"
         node-key="id"
         :default-checked-keys="checkedKeys"
-        default-expand-all 
+        default-expand-all
         show-checkbox
         :data="data"
         :props="defaultProps">
-          
+
       </el-tree>
       <span>这是一段信息</span>
       <span slot="footer" class="dialog-footer">
@@ -104,95 +104,95 @@
 
 <script>
 export default {
-    data() {
-        return {
-            tableData:[],
-            dialogVisible: false,
-            data: [],
-            defaultProps: {
-                //树上节点绑定对象的属性
-                label: 'authName',
-                // 对象的子节点绑定对象的属性
-                children: 'children'
-            },
-            checkedKeys: [],
-            // 记录当前角色的ID
-            currentRoleId: -1
-        }
+  data() {
+    return {
+      tableData: [],
+      dialogVisible: false,
+      data: [],
+      defaultProps: {
+        // 树上节点绑定对象的属性
+        label: 'authName',
+        // 对象的子节点绑定对象的属性
+        children: 'children'
+      },
+      checkedKeys: [],
+      // 记录当前角色的ID
+      currentRoleId: -1
+    };
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    // 加载表格数据
+    async loadData() {
+      const response = await this.$http.get('roles');
+      const { meta: { msg, status} } = response.data;
+      if (status === 200) {
+        this.tableData = response.data.data;
+      } else {
+        this.$message.error(msg);
+      }
     },
-    created() {
+    // 删除当前角色对应的权限
+    async handleClose(role, rightId) {
+      // role 当前行对应的角色对象
+      // rightId 当前权限的ID
+      // roles/:roleId/rights/:rightId
+      const response = await this.$http.delete(`roles/${role.id}/rights/${rightId}`);
+      const { meta: {msg, status} } = response.data;
+      if (status === 200) {
+        this.$message.success(msg);
+        // this.loadData();
+        // 只重新加载当前角色的权限列表
+        role.children = response.data.data;
+      } else {
+        this.$message.error(msg);
+      }
+    },
+    // 点击分配权限，显示对话框
+    async handleOpenDialog (role) {
+      this.dialogVisible = true;
+      // 获取所有权限tree
+      const response = await this.$http.get('rights/tree');
+      this.data = response.data.data;
+
+      // 设置当前角色所拥有的权限被选中
+      // 当前角色所拥有的三级权限ID
+      const arr = [];
+      // 遍历一级权限
+      role.children.forEach((level1) => {
+        // 遍历二级权限
+        level1.children.forEach((level2) => {
+          level2.children.forEach((level3) => {
+            arr.push(level3.id);
+          });
+        });
+      });
+      this.checkedKeys = arr;
+      // 记录当前角色的id
+      this.currentRoleId = role.id;
+    },
+    // 点击确定按钮给当前角色设置权限
+    async handleSetRights() {
+      const arr1 = this.$refs.tree.getCheckedKeys();
+      const arr2 = this.$refs.tree.getHalfCheckedKeys();
+      const arr = [...arr1, ...arr2];
+      const rids = arr.join(',');
+      // 发送请求
+      const response = await this.$http.post(`roles/${this.currentRoleId}/rights`, {
+        rids: rids
+      });
+      const { meta: { msg, status }} = response.data;
+      if (status === 200) {
+        this.$message.success(msg);
+        this.dialogVisible = false;
         this.loadData();
-    },
-    methods: {
-        // 加载表格数据
-        async loadData() {
-            const response = await this.$http.get('roles');
-            const { meta: { msg, status} } = response.data;
-            if (status === 200) {
-                this.tableData = response.data.data;
-            } else {
-                this.$message.error(msg)
-            }
-        },
-        // 删除当前角色对应的权限
-        async handleClose(role, rightId) {
-            // role 当前行对应的角色对象
-            // rightId 当前权限的ID
-            // roles/:roleId/rights/:rightId
-            const response = await this.$http.delete(`roles/${role.id}/rights/${rightId}`);
-            const { meta: {msg,status} } = response.data;
-            if(status === 200) {
-                this.$message.success(msg);
-                // this.loadData();
-                // 只重新加载当前角色的权限列表
-                role.children = response.data.data;
-            } else {
-                this.$message.error(msg);
-            }
-        },
-        // 点击分配权限，显示对话框
-        async handleOpenDialog (role) {
-            this.dialogVisible = true;
-            //获取所有权限tree
-            const response = await this.$http.get('rights/tree');
-            this.data = response.data.data;
-            
-            //设置当前角色所拥有的权限被选中
-            // 当前角色所拥有的三级权限ID
-            const arr = [];
-            // 遍历一级权限
-            role.children.forEach((level1) => {
-                //遍历二级权限
-                level1.children.forEach((level2) => {
-                    level2.children.forEach((level3)=>{
-                        arr.push(level3.id);
-                    });
-                });
-            });
-            this.checkedKeys = arr;
-            // 记录当前角色的id
-            this.currentRoleId = role.id;
-        },
-        // 点击确定按钮给当前角色设置权限
-        async handleSetRights() {
-            const arr1 = this.$refs.tree.getCheckedKeys();
-            const arr2 = this.$refs.tree.getHalfCheckedKeys();
-            const arr = [...arr1,...arr2];
-            const rids = arr.join(',');
-            //发送请求
-            const response = await this.$http.post(`roles/${this.currentRoleId}/rights`,{
-                rids: rids
-            });
-            const { meta: { msg,status }} = response.data;
-            if(status === 200) {
-                this.$message.success(msg);
-                this.dialogVisible = false;
-                this.loadData();
-            } else {
-                this.$message.error(msg);
-            }
-        }
+      } else {
+        this.$message.error(msg);
+      }
     }
+  }
 };
 </script>
 

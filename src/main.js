@@ -15,8 +15,8 @@ Vue.filter('fmtDate', (value, fmtStr) => {
   return moment(value).format(fmtStr);
 });
 
-//全局注册面包屑组件
-Vue.component(MyBreadcrumb.name ,MyBreadcrumb);
+// 全局注册面包屑组件
+Vue.component(MyBreadcrumb.name, MyBreadcrumb);
 
 // 注册myhttp插件
 Vue.use(Myhttp);

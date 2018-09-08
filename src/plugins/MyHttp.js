@@ -8,7 +8,7 @@ MyHtpp.install = function(Vue) {
   axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/';
   let loadingInstance = null;
   // 添加请求拦截器
-  axios.interceptors.request.use(function(config){
+  axios.interceptors.request.use(function(config) {
     // 在请求发送之前 添加请求头token
     // 如果当前请求的地址是/login的时候不加token
     // console.log(config);
@@ -24,7 +24,7 @@ MyHtpp.install = function(Vue) {
     return Promise.reject(error);
   });
   // 添加响应拦截器
-  axios.interceptors.response.use(function(response){
+  axios.interceptors.response.use(function(response) {
     // 隐藏加载提示
     loadingInstance.close();
     return response;
