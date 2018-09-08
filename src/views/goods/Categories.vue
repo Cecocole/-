@@ -3,7 +3,7 @@
         <!-- 面包屑 -->
         <my-breadcrumb level1="商品列表" level2="商品分类"></my-breadcrumb>
         <!-- 表格 -->
-        <el-button style="margin-top:10px;margin-bottom:10px;" type="success" plain>添加分类</el-button>
+        <el-button style="margin-top:10px;margin-bottom:10px;" type="success" plain @click="addDialogFormVisible = true">添加分类</el-button>
         <!-- 表格 -->
         <el-table
         border
@@ -61,6 +61,36 @@
             layout="total,sizes, prev, pager, next,jumper"
             :total="total">
         </el-pagination>
+        <!-- 添加的弹出对话框 -->
+        <el-dialog
+        title="添加商品分类"
+        :visible.sync="addDialogFormVisible">
+            <el-form :model="form" label-width="80px">
+                <el-form-item label="分类名称">
+                <el-input v-model="form.cat_name" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="父级分类">
+                    <!-- 多级下拉框 -->
+                    <!-- expand-trigger 触发(展开) 事件
+                        options: 提供展示的数据，是数组
+                        v-model：双向绑定，多级下拉框，绑定上的是多个值，数组
+                        @change 选中项改变的时候执行    
+                         change-on-select 用于选择任意一级的菜单
+                     -->
+                    <el-cascader
+                        clearable
+                        change-on-select
+                        expand-trigger="hover"
+                        :options="options"
+                        v-model="selectedOptions">
+                    </el-cascader>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addDialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="addDialogFormVisible = false">确 定</el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -79,6 +109,14 @@ export default {
             pagenum: 1,
             pagesize: 9,
             total: 0,
+            // 控制添加对话框的显示隐藏
+            addDialogFormVisible: false,
+            form: {
+                cat_name:''
+            },
+            options:[],
+            selectedOptions:[],
+
         };
     },
     created() {
