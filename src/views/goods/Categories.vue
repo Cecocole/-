@@ -50,6 +50,17 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 分页 -->
+        <el-pagination
+			style="margin-top:15px"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="pagenum"
+            :page-sizes="[5,10, 15, 20]"
+            :page-size="pagesize"
+            layout="total,sizes, prev, pager, next,jumper"
+            :total="total">
+        </el-pagination>
     </el-card>
 </template>
 
@@ -64,7 +75,10 @@ export default {
     },
     data() {
         return {
-            tableData:[]
+            tableData:[],
+            pagenum: 1,
+            pagesize: 9,
+            total: 0,
         };
     },
     created() {
@@ -73,11 +87,24 @@ export default {
     methods: {
         // 获取数据
         async loadData() {
-            const response = await this.$http.get('categories?type=3&pagenum=1&pagesize=5');
+            const response = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
             const { meta: { msg, status} } = response.data;
             if(status === 200) {
                 this.tableData = response.data.data.result;
+                this.total = response.data.data.total;
             }
+        },
+        handleSizeChange(val) {
+        // 页容量发生变化 val页容量
+        this.pagesize = val;
+        this.loadData();
+        console.log(`每页 ${val} 条`);
+        },
+        handleCurrentChange(val) {
+        // 当页码发送改变执行
+        this.pagenum = val;
+        this.loadData();
+        console.log(`当前页: ${val}`);
         },
     }
 }
