@@ -3,7 +3,7 @@
         <!-- 面包屑 -->
         <my-breadcrumb level1="商品列表" level2="商品分类"></my-breadcrumb>
         <!-- 表格 -->
-        <el-button style="margin-top:10px;margin-bottom:10px;" type="success" plain @click="addDialogFormVisible = true">添加分类</el-button>
+        <el-button style="margin-top:10px;margin-bottom:10px;" type="success" plain @click="handleOpenAddDialog">添加分类</el-button>
         <!-- 表格 -->
         <el-table
         border
@@ -76,12 +76,14 @@
                         v-model：双向绑定，多级下拉框，绑定上的是多个值，数组
                         @change 选中项改变的时候执行    
                          change-on-select 用于选择任意一级的菜单
+                         props 对象，设置多级下拉显示的属性,value对应的属性，子节点对应的属性
                      -->
                     <el-cascader
                         clearable
                         change-on-select
                         expand-trigger="hover"
                         :options="options"
+                        :props="{label:'cat_name',value:'cat_id',children:'children'}"
                         v-model="selectedOptions">
                     </el-cascader>
                 </el-form-item>
@@ -144,6 +146,11 @@ export default {
         this.loadData();
         console.log(`当前页: ${val}`);
         },
+        async handleOpenAddDialog() {
+            this.addDialogFormVisible = true;
+            const response = await this.$http.get('categories?type=2');
+            this.options = response.data.data;
+        }
     }
 }
 </script>
