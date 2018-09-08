@@ -58,13 +58,14 @@ export default {
     this.loadMenus();
   },
   // 判断是否登录
-  beforeCreate () {
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      this.$message.warning('请先登录');
-      this.$router.push('/login');
-    }
-  },
+  // 因为index.js添加了全局验证token 所以这个注释掉
+  // beforeCreate () {
+  //   const token = sessionStorage.getItem('token');
+  //   if (!token) {
+  //     this.$message.warning('请先登录');
+  //     this.$router.push('/login');
+  //   }
+  // },
   methods: {
     handleLogout() {
       sessionStorage.clear();
