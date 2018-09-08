@@ -197,10 +197,6 @@ export default {
 </script>
 
 <style>
-.card {
-    height: 100%;
-    overflow: auto;
-}
 
 .level3 {
     margin-right: 3px;
