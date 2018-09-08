@@ -30,13 +30,13 @@ const router = new Router({
           name: 'roles',
           path: '/roles',
           component: Roles
+        },
+        {
+          nae: 'categories',
+          path: '/categories',
+          component:Categories
         }
       ]
-    },
-    {
-      nae: 'categories',
-      path: '/categories',
-      component:Categories
     },
   ]
 });
